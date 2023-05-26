@@ -1,0 +1,7 @@
+/.DS_Store
+/src/main/resources/application.yml
+README.md
+# Project exclude paths
+/.gradle/
+/build/
+/build/classes/java/main/

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="574fce46-30c7-4d2a-8899-841a4b9e6d39" name="castle_server" url="http://castleserver.shop">
+        <fileTransfer rootFolder="/var/www/CarrotMarket" accessType="SFTP" host="3.19.93.148" port="22" sshConfigId="6c7fffa4-02dc-4ec1-9480-f8cd00da72e2" sshConfig="ubuntu@3.19.93.148:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

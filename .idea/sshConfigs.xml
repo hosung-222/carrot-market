@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="3.19.93.148" id="6c7fffa4-02dc-4ec1-9480-f8cd00da72e2" keyPath="$USER_HOME$/ec2keys/ServerStudyKey.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" useOpenSSHConfig="true" />
+    </configs>
+  </component>
+</project>
