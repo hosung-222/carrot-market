@@ -119,7 +119,7 @@ public class UserController {
 //        }
 //    }
     @ResponseBody
-    @GetMapping("/auth/kakao/callback")
+    @GetMapping("/oauth/callback/kakao")
     public String kakaoCallBack(){
         return "카카오 인증완료";
     }
@@ -152,8 +152,7 @@ public class UserController {
     /**
      * 유저 삭제 API
      * [DELETE] /users/:userIdx
-     * @param userIdx
-     * @return
+     * @return userIdx
      */
     @ResponseBody
     @DeleteMapping("/{userIdx}")
