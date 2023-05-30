@@ -118,8 +118,11 @@ public class UserController {
 //            return new BaseResponse<>(exception.getStatus());
 //        }
 //    }
-
-
+    @ResponseBody
+    @GetMapping("/auth/kakao/callback")
+    public String kakaoCallBack(){
+        return "카카오 인증완료";
+    }
     /**
      * 유저 이름 변경 API
      * [PATCH] /users/:userIdx
