@@ -1,5 +1,10 @@
 package com.example.demo.src.kako;
 
+import com.example.demo.src.kako.model.OAuthToken;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -43,7 +48,14 @@ public class KakaoController {
                 kakaoTokenRequest,
                 String.class
         );
-
-        return "카카오 인증완료" + responseEntity;
+        ObjectMapper objectMapper = new ObjectMapper();
+        OAuthToken oAuthToken = null;
+        try {
+            oAuthToken = objectMapper.readValue((String)responseEntity.getBody(), OAuthToken.class);
+        }catch (JsonProcessingException e ){
+            e.printStackTrace();
+        }
+        System.out.println(oAuthToken.getAccess_token());
+        return "카카오 인증완료" + responseEntity.getBody();
     }
 }
