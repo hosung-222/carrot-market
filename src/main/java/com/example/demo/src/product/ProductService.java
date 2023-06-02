@@ -52,4 +52,11 @@ public class ProductService {
 //            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
 //        }
     }
+    public void deleteLikeProduct(int productIdx, int userIdx)throws BaseException{
+        boolean likeProductExists = productDao.checkLikeProductExists(productIdx,userIdx);
+        if(!likeProductExists){
+            throw new BaseException(BaseResponseStatus.INVALID_PRODUCTID_OR_USERID);
+        }
+        int result = productDao.deleteLikeProduct(productIdx, userIdx);
+    }
 }

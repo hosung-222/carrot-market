@@ -2,6 +2,7 @@ package com.example.demo.src.product;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.src.product.model.GetAllProductRes;
 import com.example.demo.src.product.model.GetPostProductRes;
 import com.example.demo.src.product.model.GetProductByCatagoryRes;
 import com.example.demo.src.product.model.GetProductRes;
@@ -24,10 +25,17 @@ public class ProductProvider {
     }
 
 
-    public  List<GetProductRes> getProducts() throws BaseException{
+    public  List<GetAllProductRes> getProducts(int page, int pageSize) throws BaseException{
         try {
-            List<GetProductRes> getProductRes = productDao.getProducts();
-            return getProductRes;
+            int offset = (page)*pageSize;
+            int totalProducts = productDao.getTotalProducts();
+            int totalPages = (int)Math.ceil((double) totalProducts/pageSize);
+
+            if (page>totalPages){
+                throw new BaseException(BaseResponseStatus.INVALID_PAGE_NUMBER);
+            }
+            List<GetAllProductRes> getAllProductRes = productDao.getProducts(pageSize, offset);
+            return getAllProductRes;
         }
         catch (Exception exception){
             logger.error("Error!",exception);

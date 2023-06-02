@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostLoginReq {
-    private String useridx;
+    private String userName;
     private String phoneNum;
 }

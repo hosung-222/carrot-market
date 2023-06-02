@@ -82,6 +82,12 @@ public class UserDao {
 
     }
 
+    public int checkUserName(String userName){
+        String checkUserNameQuery = "select exists(select user_name from user where user_name = ?)";
+        String checkUserNameParams = userName;
+        return this.jdbcTemplate.queryForObject(checkUserNameQuery,int.class,checkUserNameParams);
+    }
+
     public int modifyUserName(PatchUserReq patchUserReq){
         String modifyUserNameQuery = "update user set user_name = ? where user_idx = ? ";
         Object[] modifyUserNameParams = new Object[]{patchUserReq.getUserName(), patchUserReq.getUserIdx()};
@@ -95,20 +101,20 @@ public class UserDao {
         return this.jdbcTemplate.update(deleteUserQuery,deleteUserParams);
     }
 
-//    public User getPwd(PostLoginReq postLoginReq){
-//        String getPwdQuery = "select user_idx,user_name, phone_num from User where user_idx = ?\n";
-//        String getPwdParams = postLoginReq.getUserIdx();
-//
-//        return this.jdbcTemplate.queryForObject(getPwdQuery,
-//                (rs,rowNum)-> new User(
-//                        rs.getInt("user_idx"),
-//                        rs.getString("user_name"),
-//                        rs.getString("phone_num")
-//                ),
-//                getPwdParams
-//                );
-//
-//    }
+    public User getPhoneNum(PostLoginReq postLoginReq){
+        String getPhoneNumQuery = "select user_idx,user_name, phone_num from user where user_name = ?\n";
+        String getPhoneNumParams = postLoginReq.getUserName();
+
+        return this.jdbcTemplate.queryForObject(getPhoneNumQuery,
+                (rs,rowNum)-> new User(
+                        rs.getInt("user_idx"),
+                        rs.getString("user_name"),
+                        rs.getString("phone_num")
+                ),
+                getPhoneNumParams
+                );
+
+    }
 
 
 }

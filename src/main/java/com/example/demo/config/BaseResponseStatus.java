@@ -52,10 +52,13 @@ public enum BaseResponseStatus {
 
     //[PATCH] /product/about/{productIdx}
     INVALID_PRODUCTID(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"존재하지 않는 상품입니다."),
+    INVALID_PRODUCTID_OR_USERID(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"존재하지 않는 상품이거나 유저입니다."),
 
     PASSWORD_ENCRYPTION_ERROR(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "비밀번호 복호화에 실패하였습니다.");
+    PASSWORD_DECRYPTION_ERROR(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "비밀번호 복호화에 실패하였습니다."),
 
+    INVALID_PAGE_NUMBER(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"존재하지 않는 페이지 입니다."),
+    NO_PRODUCTS_FOUND(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"페이지에 존재하는 상품을 찾지 못했습니다.");
 
     private final boolean isSuccess;
     private final int code;

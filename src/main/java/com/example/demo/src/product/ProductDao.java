@@ -1,5 +1,7 @@
 package com.example.demo.src.product;
 
+import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.product.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class ProductDao {
@@ -19,25 +20,37 @@ public class ProductDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+
+    public int getTotalProducts(){
+        String totalProductsQuery = "SELECT count(*) from product where hide = 0";
+        return jdbcTemplate.queryForObject(totalProductsQuery, Integer.class);
+    }
+
     // 전체 상품 조회
-    public List<GetProductRes> getProducts() {
-        String getProductQuery = "SELECT R.region_name as regionName, P.product_title as productTitle, P.product_price as productPrice, P.updated_at as updatedAt,\n" +
-                "\t       COALESCE(MAX(i.img_url), '기본 이미지 URL') AS imgUrl, count(lP.user_idx) AS cntLike, R.region_name as regionName\n" +
-                "FROM product P\n" +
-                "JOIN region R ON P.region_idx = R.region_idx\n" +
-                "LEFT JOIN image i ON P.product_idx = i.product_idx\n" +
-                "LEFT JOIN like_product lP on P.product_idx = lP.product_idx\n" +
-                "WHERE P.hide = 0\n" +
-                "GROUP BY R.region_name, P.product_title, P.product_price, P.updated_at;";
-        return this.jdbcTemplate.query(getProductQuery,
-                (rs, rowNum) -> new GetProductRes(
-                        rs.getString("productTitle"),
-                        rs.getInt("productPrice"),
-                        rs.getString("regionName"),
-                        rs.getTimestamp("updatedAt"),
-                        rs.getString("imgUrl"),
-                        rs.getInt("cntLike"))
-        );
+    public List<GetAllProductRes> getProducts(int pageSize, int offset) throws BaseException {
+
+        String sql = "SELECT R.region_name AS regionName, P.product_title AS productTitle, P.product_price AS productPrice, P.updated_at AS updatedAt, " +
+                "COALESCE(MAX(i.img_url), '기본 이미지 URL') AS imgUrl, COUNT(lP.user_idx) AS cntLike " +
+                "FROM product P " +
+                "JOIN region R ON P.region_idx = R.region_idx " +
+                "LEFT JOIN image i ON P.product_idx = i.product_idx " +
+                "LEFT JOIN like_product lP ON P.product_idx = lP.product_idx " +
+                "WHERE P.hide = 0 " +
+                "GROUP BY R.region_name, P.product_title, P.product_price, P.updated_at " +
+                "ORDER BY P.updated_at DESC " +
+                "LIMIT ? OFFSET ?";
+
+        return jdbcTemplate.query(sql, new Object[]{pageSize, offset}, (rs, rowNum) -> {
+            GetAllProductRes product = new GetAllProductRes();
+            // 결과셋에서 필요한 데이터를 가져와 ProductDTO에 설정
+            product.setRegionName(rs.getString("regionName"));
+            product.setProductTitle(rs.getString("productTitle"));
+            product.setProductPrice(rs.getInt("productPrice"));
+            product.setUpdatedAt(rs.getTimestamp("updatedAt"));
+            product.setImgUrl(rs.getString("imgUrl"));
+            product.setCntLike(rs.getInt("cntLike"));
+            return product;
+        });
     }
 
     // regionName에 따른 상품 조회 (완료)
@@ -199,6 +212,18 @@ public class ProductDao {
         String deleteProductQuery = "delete from product where product_idx = ?";
         int deleteProdutParams = productIdx;
         return this.jdbcTemplate.update(deleteProductQuery,deleteProdutParams);
+    }
+    public boolean checkLikeProductExists(int productIdx, int userIdx){
+        String query = "select count(*) from like_product where user_idx = ? and product_idx = ?";
+        Object[] params = new Object[]{userIdx, productIdx};
+        int count = jdbcTemplate.queryForObject(query,params,Integer.class);
+        return count>0;
+    }
+
+    public int deleteLikeProduct(int productIdx, int userIdx){
+        String deleteLikeProductQuery = "delete from like_product where user_idx=? and product_idx = ?";
+        Object[] params = new Object[]{userIdx, productIdx};
+        return this.jdbcTemplate.update(deleteLikeProductQuery,params);
     }
 
 }

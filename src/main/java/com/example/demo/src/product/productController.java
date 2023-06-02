@@ -22,6 +22,24 @@ public class productController {
     private ProductService productService;
 
     /**
+     * 페이징해서 전체 상품 조회
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("")
+    public BaseResponse<List<GetAllProductRes>> getAllProductsByPage(@RequestParam("page") int page, @RequestParam("pageSize") int pageSize){
+        try{
+            List<GetAllProductRes> getAllProductRes = productProvider.getProducts(page, pageSize);
+            return new BaseResponse<>(getAllProductRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
      * 상품 리스트조회 API 1
      * @param regionName
      * 상품 지역에 따른 전체 상품 조회 API
@@ -142,6 +160,24 @@ public class productController {
         try{
             productService.deleteProduct(productIdx);
             String result = productIdx + "번 상품이 삭제되었습니다.";
+            return new BaseResponse<>(result);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 찜한 상품 취소
+     * @param productIdx
+     * @param userIdx
+     * @return
+     */
+    @ResponseBody
+    @DeleteMapping("")
+    public BaseResponse<String> deleteLikeProduct(@RequestParam("productIdx") int productIdx,@RequestParam("userIdx") int userIdx){
+        try {
+            productService.deleteLikeProduct(productIdx, userIdx);
+            String result = userIdx+" 유저가 " + productIdx +" 상품 좋아요를 취소 했습니다. ";
             return new BaseResponse<>(result);
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());

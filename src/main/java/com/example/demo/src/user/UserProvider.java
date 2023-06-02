@@ -62,24 +62,26 @@ public class UserProvider {
         }
     }
 
-//    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException{
-//        User user = userDao.getPwd(postLoginReq);
-//        String encryptPwd;
-//        try {
-//            encryptPwd=new SHA256().encrypt(postLoginReq.getUserIdx());
-//        } catch (Exception ignored) {
-//            throw new BaseException(PASSWORD_DECRYPTION_ERROR);
-//        }
-//
-//        if(user.getPhoneNum().equals(encryptPwd)){
-//            int userIdx = user.getUserIdx();
-//            String jwt = jwtService.createJwt(userIdx);
-//            return new PostLoginRes(userIdx,jwt);
-//        }
-//        else{
-//            throw new BaseException(FAILED_TO_LOGIN);
-//        }
-//
-//    }
+    public int checkUserName(String userName) throws BaseException{
+        try {
+            return userDao.checkUserName(userName);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException{
+        User user = userDao.getPhoneNum(postLoginReq);
+
+        if(user.getPhoneNum().equals(user.getPhoneNum())){
+            int userIdx = user.getUserIdx();
+            String jwt = jwtService.createJwt(userIdx);
+            return new PostLoginRes(userIdx,jwt);
+        }
+        else{
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
+
+    }
 
 }

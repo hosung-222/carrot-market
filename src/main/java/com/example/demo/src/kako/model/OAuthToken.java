@@ -1,10 +1,16 @@
 package com.example.demo.src.kako.model;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class OAuthToken {
-    private String access_token;
+    private String Access_token;
     private String token_type;
      private String refresh_token;
      private int expires_in;
