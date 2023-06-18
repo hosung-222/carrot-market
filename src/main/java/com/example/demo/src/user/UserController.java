@@ -225,7 +225,7 @@ public class UserController {
      * @return
      */
     @ResponseBody
-    @PostMapping("/mainRegion/{userIdx}")
+    @PostMapping("/mainregion/{userIdx}")
     public BaseResponse<String> selectMainRegion(@RequestParam("mainRegion") String mainRegion, @PathVariable("userIdx") int userIdx) {
         try {
             if(userService.selectMainRegion(userIdx,mainRegion)) {
@@ -237,5 +237,38 @@ public class UserController {
         }
     }
 
+    /**
+     * 거래 리뷰 남기기
+     * @param userIdx
+     * @param postReviewReq
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/review/{userIdx}")
+    public BaseResponse<String> sendReview(@PathVariable("userIdx") int userIdx,@RequestBody PostReviewReq postReviewReq){
+        try {
+            userService.sendReview(userIdx, postReviewReq);
+            return new BaseResponse<>("리뷰를 작성했습니다.");
+        }catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
+     * 리뷰 확인하기
+     * @param userIdx
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/review/{userIdx}")
+    public BaseResponse<List<GetReviewRes>> getMyReviews(@PathVariable("userIdx") int userIdx){
+        try{
+            List<GetReviewRes> getReviewRes = userProvider.getMyReviews(userIdx);
+            return new BaseResponse<>(getReviewRes);
+        }catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 }

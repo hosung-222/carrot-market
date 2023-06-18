@@ -83,7 +83,7 @@ public class productController {
      */
     @ResponseBody
     @GetMapping("/about")
-    public BaseResponse<GetPostProductRes> getPostProduct(@RequestParam() int productIdx){
+    public BaseResponse<GetPostProductRes> getPostProduct(@RequestParam("productIdx") int productIdx){
         try{
             GetPostProductRes getPostProductRes = productProvider.getProduct(productIdx);
             return new BaseResponse<>(getPostProductRes);

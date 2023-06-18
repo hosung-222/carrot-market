@@ -63,8 +63,9 @@ public class UserService {
     }
 
     public void deleteUser(int userIdx) throws BaseException {
+
         try {
-            int result = userDao.deleteUser(userIdx);
+            userDao.deleteUser(userIdx);
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -72,6 +73,7 @@ public class UserService {
     }
 
     public Boolean selectMainRegion(int userIdx, String userRegion) throws BaseException{
+
         if(!userDao.findUserRegion(userIdx, userRegion))
             throw new BaseException(NO_REGION_FOR_USER);
         try{
@@ -83,5 +85,24 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public Boolean sendReview(int userIdx, PostReviewReq postReviewReq)throws BaseException{
+//        if (userDao.findUserByUserIdx(userIdx)){
+//            throw new BaseException(USERS_EMPTY_USER_ID);
+//        }
+//        if (userDao.findUserByUserIdx(postReviewReq.getSendUserIdx())){
+//            throw new BaseException(USERS_EMPTY_USER_ID);
+//        }
+        try {
+            if(userDao.sendReview(userIdx, postReviewReq)>0)
+                return true;
+
+            else throw new BaseException(FAIL_SEND_REVIEW);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 
 }

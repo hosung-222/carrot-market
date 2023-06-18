@@ -116,4 +116,13 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetReviewRes> getMyReviews(int userIdx) throws BaseException{
+        try {
+            List<GetReviewRes> getReviewRes = userDao.getMyReviews(userIdx);
+            return getReviewRes;
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

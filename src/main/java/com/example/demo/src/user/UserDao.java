@@ -167,5 +167,28 @@ public class UserDao {
         return count > 0;
     }
 
+    public int sendReview(int userIdx, PostReviewReq postReviewReq){
+        String sendReviewQuery = "INSERT INTO user_review (user_idx, send_user_idx, review) VALUES (?, ?, ?)";
+        Object[] sendReviewParams = {userIdx, postReviewReq.getSendUserIdx(), postReviewReq.getReview()};
+        return jdbcTemplate.update(sendReviewQuery, sendReviewParams);
+    }
 
+    public boolean findUserByUserIdx(int userIdx){
+        String findUserQuery = "SELECT COUNT(*) FROM user WHERE user_idx = ?";
+        Object[] findUserParams = {userIdx};
+        int count = jdbcTemplate.queryForObject(findUserQuery, Integer.class, findUserParams);
+        return count > 0;
+    }
+
+    public List<GetReviewRes> getMyReviews (int userIdx){
+        String getMyReviewsQuery = "SELECT  r.user_idx AS sendUserIdx, r.review " +
+                "FROM user_review r WHERE r.send_user_idx = ?";
+        Object[] getMyReviewsParams = {userIdx};
+        return jdbcTemplate.query(getMyReviewsQuery, getMyReviewsParams, (rs, rowNum) -> {
+            GetReviewRes review = new GetReviewRes();
+            review.setUserIdx(rs.getInt("sendUserIdx"));
+            review.setReview(rs.getString("review"));
+            return review;
+        });
+    }
 }

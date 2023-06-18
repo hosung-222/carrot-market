@@ -62,6 +62,7 @@ public enum BaseResponseStatus {
     INVALID_PAGE_NUMBER(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"존재하지 않는 페이지 입니다."),
     NO_PRODUCTS_FOUND(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"페이지에 존재하는 상품을 찾지 못했습니다."),
 
+    FAIL_SEND_REVIEW(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"리뷰 작성에 실패 하였습니다."),
     NO_USER_FOR_PHONE_NUM(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"회원이 아닙니다."),
     NO_REGION_FOR_USER(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"유저에 해당하는 지역을 찾지 못했습니다.");
 
