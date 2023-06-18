@@ -7,6 +7,7 @@ import com.example.demo.src.product.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -184,7 +185,12 @@ public class productController {
         }
     }
 
-    // 찜한 상품 등록
+    /**
+     * 찜한 상품 등록
+     * @param userIdx
+     * @param productIdx
+     * @return
+     */
     @ResponseBody
     @PostMapping("/register")
     public BaseResponse<String> registerLikeProduct(@RequestParam("userIdx") int userIdx, @RequestParam("productIdx") int productIdx) {
@@ -193,10 +199,60 @@ public class productController {
             return new BaseResponse<>(productIdx + "찜한 목록 추가");
 
             else return new BaseResponse<>("찜한 목록 추가 실패");
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 상품 끌어올리기
+     * @param productIdx
+     * @return
+     */
+    @ResponseBody
+    @PatchMapping("/updatetime/{productIdx}")
+    public BaseResponse<String> updateProductTime(@PathVariable("productIdx")int productIdx){
+        try {
+            if(productService.updateProductTime(productIdx))
+                return new BaseResponse<>("끌어올리기 완료");
+            else
+                return new BaseResponse<>("끌어 올리기 실패");
         } catch (BaseException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * 내가 찜한 상품 보기 API
+     * @param userIdx
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/likeproduct")
+    public BaseResponse<List<GetLikeProductRes>> getLikeProducts(@RequestParam("userIdx")int userIdx){
+        try {
+            List<GetLikeProductRes> getLikeProductRes = productProvider.getLikeProducts(userIdx);
+            return new BaseResponse<>(getLikeProductRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 키워드로 상품 검색 API
+     * @param keywords
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/search")
+    public BaseResponse<List<GetSearchProductRes>> getSearchProducts(@RequestParam("keywords")String keywords){
+        try {
+            List<GetSearchProductRes> getSearchProductRes = productProvider.getSearchProducts(keywords);
+            return new BaseResponse<>(getSearchProductRes);
+
+        }catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
 

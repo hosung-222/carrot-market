@@ -2,10 +2,7 @@ package com.example.demo.src.product;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
-import com.example.demo.src.product.model.GetAllProductRes;
-import com.example.demo.src.product.model.GetPostProductRes;
-import com.example.demo.src.product.model.GetProductByCatagoryRes;
-import com.example.demo.src.product.model.GetProductRes;
+import com.example.demo.src.product.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -78,6 +75,21 @@ public class ProductProvider {
         }
     }
 
+    public List<GetLikeProductRes> getLikeProducts(int userIdx) throws BaseException{
+        try {
+            List<GetLikeProductRes> getLikeProductRes = productDao.getLikeProducts(userIdx);
+            return getLikeProductRes;
+        }catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
 
-
+    public List<GetSearchProductRes> getSearchProducts(String keyword) throws BaseException {
+        try {
+            List<GetSearchProductRes> getSearchProductRes = productDao.getSearchProducts(keyword);
+            return getSearchProductRes;
+        } catch (Exception exception) {
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
 }

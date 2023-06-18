@@ -65,4 +65,16 @@ public class ProductService {
             return true;
         }else return false;
     }
+
+
+    // 48 시간 설정 필요
+    public boolean updateProductTime(int productIdx) throws BaseException{
+
+        if(productDao.updateProductTime(productIdx)>0){
+            return true;
+        }
+        else return false;
+    }
+
+
 }

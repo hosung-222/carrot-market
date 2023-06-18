@@ -4,10 +4,12 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.product.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -229,5 +231,62 @@ public class ProductDao {
         String addLikeProductQuery = "INSERT INTO like_product (user_idx, product_idx) VALUES (?, ?)";
         Object[] addLikeProductParams = new Object[]{userIdx,produxtIdx};
         return this.jdbcTemplate.update(addLikeProductQuery,addLikeProductParams);
+    }
+
+    public LocalDateTime getLastUpdatedTime(int productIdx) {
+        String query = "SELECT updated_at FROM product WHERE product_idx = ?";
+        return jdbcTemplate.queryForObject(query, LocalDateTime.class, productIdx);
+    }
+
+    public int updateProductTime(int productIdx){
+        String updateProductTimeQuery = "UPDATE product SET updated_at = NOW() WHERE product_idx = ?";
+        return jdbcTemplate.update(updateProductTimeQuery, productIdx);
+    }
+
+    public List<GetLikeProductRes> getLikeProducts(int userIdx){
+        String getLikeProductsQuery = "SELECT R.region_name AS regionName, P.product_title AS productTitle, P.product_price AS productPrice,\n" +
+                "       P.updated_at AS updatedAt, COALESCE(MAX(i.img_url), '기본 이미지 URL') AS imgUrl,\n" +
+                "       COUNT(lP.user_idx) AS cntLike, R.region_name AS regionName, pc.catagory_name AS catagoryName\n" +
+                "FROM product P\n" +
+                "JOIN region R ON P.region_idx = R.region_idx\n" +
+                "LEFT JOIN image i ON P.product_idx = i.product_idx\n" +
+                "LEFT JOIN like_product lP ON P.product_idx = lP.product_idx\n" +
+                "LEFT JOIN product_catagory pc ON P.productcatagory_idx = pc.productcatagory_idx\n" +
+                "WHERE lP.user_idx = ? AND P.hide = 0\n" +
+                "GROUP BY R.region_name, P.product_title, P.product_price, P.updated_at";
+
+        return jdbcTemplate.query(getLikeProductsQuery, (rs, rowNum) -> {
+            GetLikeProductRes likeProductRes = new GetLikeProductRes();
+            likeProductRes.setRegionName(rs.getString("regionName"));
+            likeProductRes.setProductTitle(rs.getString("productTitle"));
+            likeProductRes.setProductPrice(rs.getInt("productPrice"));
+            likeProductRes.setUpdatedAt(rs.getTimestamp("updatedAt"));
+            likeProductRes.setImgUrl(rs.getString("imgUrl"));
+            likeProductRes.setCntLike(rs.getInt("cntLike"));
+            likeProductRes.setRegionName(rs.getString("regionName"));
+            likeProductRes.setCatagoryName(rs.getString("catagoryName"));
+            return likeProductRes;
+        }, userIdx);
+
+    }
+
+    public List<GetSearchProductRes> getSearchProducts(String keywords){
+        String getSearchProductsQuery = "SELECT P.product_idx AS productIdx, P.product_title AS productTitle, " +
+                "P.product_price AS productPrice, P.updated_at AS updatedAt, " +
+                "COALESCE(MAX(i.img_url), '기본 이미지 URL') AS imgUrl, COUNT(lP.user_idx) AS cntLike, " +
+                "R.region_name AS regionName, pc.catagory_name AS catagoryName " +
+                "FROM product P " +
+                "JOIN region R ON P.region_idx = R.region_idx " +
+                "LEFT JOIN image i ON P.product_idx = i.product_idx " +
+                "LEFT JOIN like_product lP ON P.product_idx = lP.product_idx " +
+                "LEFT JOIN product_catagory pc ON P.productcatagory_idx = pc.productcatagory_idx " +
+                "WHERE P.product_title LIKE ? AND P.hide = 0 " +
+                "GROUP BY P.product_idx, P.product_title, P.product_price, P.updated_at, " +
+                "R.region_name, pc.catagory_name";
+
+        String searchKeyword = "%" + keywords + "%";
+
+        return jdbcTemplate.query(getSearchProductsQuery, new BeanPropertyRowMapper<>(GetSearchProductRes.class), searchKeyword);
+
     }
 }

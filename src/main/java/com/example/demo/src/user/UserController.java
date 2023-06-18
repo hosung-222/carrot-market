@@ -112,7 +112,7 @@ public class UserController {
      * @return BaseResponse<PostLoginRes>
      */
     @ResponseBody
-    @PostMapping("/logIn")
+    @PostMapping("/login")
     public BaseResponse<PostLoginRes> logIn(@RequestParam("phoneNum")String phoneNum, @RequestParam("authNum") String authNum){
 //        if(phoneNum == null){
 //            return new BaseResponse<>(POST_USERS_EMPTY_PHONENUMBER);
