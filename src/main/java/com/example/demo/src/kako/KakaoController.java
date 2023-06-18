@@ -127,7 +127,7 @@ public class KakaoController {
 
         //로그인 처리
         PostLoginReq postLoginReq = new PostLoginReq(kakaoProfile.getProperties().getNickname()+"_"+kakaoProfile.getId(), garbagePhoneNum);
-        PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
+        PostLoginRes postLoginRes = userProvider.kakaoLogin(postLoginReq);
         return postLoginRes.getJwt();
 
     }

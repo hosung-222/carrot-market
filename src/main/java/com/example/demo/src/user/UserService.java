@@ -34,15 +34,15 @@ public class UserService {
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
         //중복
-        if(userProvider.checkPhoneNum(postUserReq.getPhoneNum()) ==1){
+        if (userProvider.checkPhoneNum(postUserReq.getPhoneNum()) == 1) {
             throw new BaseException(POST_USERS_EXISTS_PHONENUBMER);
         }
 
-        try{
+        try {
             int userIdx = userDao.createUser(postUserReq);
             //jwt 발급.
             String jwt = jwtService.createJwt(userIdx);
-            return new PostUserRes(jwt,userIdx);
+            return new PostUserRes(jwt, userIdx);
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -50,24 +50,38 @@ public class UserService {
     }
 
     public void modifyUserName(PatchUserReq patchUserReq) throws BaseException {
-        try{
+        try {
             int result = userDao.modifyUserName(patchUserReq);
-            if(result == 0){
+            if (result == 0) {
                 throw new BaseException(MODIFY_FAIL_USERNAME);
             }
 
-        } catch(Exception exception){
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
 
     }
 
-    public void deleteUser(int userIdx) throws BaseException{
-        try{
+    public void deleteUser(int userIdx) throws BaseException {
+        try {
             int result = userDao.deleteUser(userIdx);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public Boolean selectMainRegion(int userIdx, String userRegion) throws BaseException{
+        if(!userDao.findUserRegion(userIdx, userRegion))
+            throw new BaseException(NO_REGION_FOR_USER);
+        try{
+            if(userDao.selectMainRegion(userIdx, userRegion)>0)
+                return true;
+            else return false;
 
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 }

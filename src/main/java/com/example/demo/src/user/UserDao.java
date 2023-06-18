@@ -115,6 +115,57 @@ public class UserDao {
                 );
 
     }
+    public int postUserRegion(int userIdx, int userRegion){
+        String postUserRegionQuery = "INSERT INTO user_region (user_idx, region_idx) VALUES (?, ?)";
+        Object[] postUserRegionParams = new Object[]{userIdx, userRegion};
+
+        return this.jdbcTemplate.update(postUserRegionQuery,postUserRegionParams);
+    }
+
+    public GetUserIdxRes findUserIdxByPhoneNum(String phoneNum){
+        String findUserIdxByPhoneNumQuery = "select user_idx from user where phone_num = ?";
+        return this.jdbcTemplate.queryForObject(findUserIdxByPhoneNumQuery,
+                (rs, rowNum) -> new GetUserIdxRes(
+                        rs.getInt("user_idx")
+                ),
+                phoneNum);
+    }
+
+    public boolean findUserRegion(int userIdx, String regionName){
+        String findUserRegionQuery = "SELECT r.region_name\n" +
+                "FROM user_region ur\n" +
+                "JOIN region r ON ur.region_idx = r.region_idx\n" +
+                "WHERE ur.user_idx = ? AND r.region_name = ?;";
+
+        Object[] findUserRegionParams = new Object[]{userIdx, regionName};
+
+        int result = this.jdbcTemplate.queryForObject(findUserRegionQuery, findUserRegionParams, Integer.class);
+        return result > 0;
+    }
+
+    public int selectMainRegion(int userIdx, String regionName){
+        String selectMainRegionQuery = "UPDATE user_region\n" +
+                "SET main_region = 'Y'\n" +
+                "WHERE user_idx = ? AND region_idx IN (\n" +
+                "    SELECT temp.region_idx\n" +
+                "    FROM (\n" +
+                "        SELECT r.region_idx\n" +
+                "        FROM region r\n" +
+                "        JOIN user_region ur ON r.region_idx = ur.region_idx\n" +
+                "        WHERE r.region_name = ?\n" +
+                "    ) AS temp\n" +
+                ");";
+        Object[] selectMainRegionParams = new Object[]{userIdx, regionName};
+        int affectedRows = this.jdbcTemplate.update(selectMainRegionQuery, selectMainRegionParams);
+
+        return affectedRows;
+    }
+
+    public boolean checkUserExists(String phoneNum) {
+        String query = "SELECT COUNT(*) FROM user WHERE phone_num = ?";
+        int count = jdbcTemplate.queryForObject(query, Integer.class, phoneNum);
+        return count > 0;
+    }
 
 
 }

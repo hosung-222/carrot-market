@@ -59,4 +59,10 @@ public class ProductService {
         }
         int result = productDao.deleteLikeProduct(productIdx, userIdx);
     }
+
+    public boolean addLikeProduct (int userIdx, int productIdx) throws BaseException{
+        if(productDao.addLikeProduct(userIdx, productIdx)>0){
+            return true;
+        }else return false;
+    }
 }

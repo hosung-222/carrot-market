@@ -225,5 +225,9 @@ public class ProductDao {
         Object[] params = new Object[]{userIdx, productIdx};
         return this.jdbcTemplate.update(deleteLikeProductQuery,params);
     }
-
+    public int addLikeProduct(int userIdx, int produxtIdx){
+        String addLikeProductQuery = "INSERT INTO like_product (user_idx, product_idx) VALUES (?, ?)";
+        Object[] addLikeProductParams = new Object[]{userIdx,produxtIdx};
+        return this.jdbcTemplate.update(addLikeProductQuery,addLikeProductParams);
+    }
 }

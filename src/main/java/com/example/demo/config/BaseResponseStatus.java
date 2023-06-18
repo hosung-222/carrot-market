@@ -32,7 +32,7 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_PHONENUMBER(false, HttpStatus.BAD_REQUEST.value(), "전화번호를 입력해주세요"),
     POST_USERS_INVALID_PHONENUMBER(false, HttpStatus.BAD_REQUEST.value(), "전화번호 형식을 확인해주세요"),
     POST_USERS_EXISTS_PHONENUBMER(false,HttpStatus.BAD_REQUEST.value(),"중복된 전화번호 입니다."),
-    FAILED_TO_LOGIN(false,HttpStatus.NOT_FOUND.value(),"없는 아이디거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_LOGIN(false,HttpStatus.NOT_FOUND.value(),"인증번호가 맞지 않습니다."),
 
     //[POST] /product
     POST_PRODUCT_EMPTY_TITLE(false,HttpStatus.BAD_REQUEST.value(), "상품 이름을 입력해주세요"),
@@ -58,7 +58,10 @@ public enum BaseResponseStatus {
     PASSWORD_DECRYPTION_ERROR(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "비밀번호 복호화에 실패하였습니다."),
 
     INVALID_PAGE_NUMBER(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"존재하지 않는 페이지 입니다."),
-    NO_PRODUCTS_FOUND(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"페이지에 존재하는 상품을 찾지 못했습니다.");
+    NO_PRODUCTS_FOUND(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"페이지에 존재하는 상품을 찾지 못했습니다."),
+
+    NO_USER_FOR_PHONE_NUM(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"회원이 아닙니다."),
+    NO_REGION_FOR_USER(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"유저에 해당하는 지역을 찾지 못했습니다.");
 
     private final boolean isSuccess;
     private final int code;

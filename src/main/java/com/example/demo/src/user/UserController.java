@@ -7,16 +7,10 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Random;
 
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -33,14 +27,17 @@ public class UserController {
     private final UserService userService;
     @Autowired
     private final JwtService jwtService;
+    @Autowired
+    private final SmsService smsService;
+    @Autowired
+    private final CacheService cacheService;
 
-
-
-
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService){
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService, SmsService smsService, CacheService cacheService){
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.smsService = smsService;
+        this.cacheService = cacheService;
     }
 
     /**
@@ -108,22 +105,50 @@ public class UserController {
 
     /////////////////////
 
+
     /**
-     * 로그인 API
+     * 전화번호 로그인 API
      * [POST] /users/logIn
      * @return BaseResponse<PostLoginRes>
      */
     @ResponseBody
     @PostMapping("/logIn")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
+    public BaseResponse<PostLoginRes> logIn(@RequestParam("phoneNum")String phoneNum, @RequestParam("authNum") String authNum){
+//        if(phoneNum == null){
+//            return new BaseResponse<>(POST_USERS_EMPTY_PHONENUMBER);
+//        }
+        //폰번호 정규 표현식
+//        if(!isRegexPhoneNumber(phoneNum)){
+//            return new BaseResponse<>(POST_USERS_INVALID_PHONENUMBER);
+//        }
         try{
-            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
+            PostLoginRes postLoginRes = userProvider.logIn(phoneNum,authNum);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
     }
-    
+
+    /**
+     * 인증 번호 발송 API
+     * @param phoneNum
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/send-one")
+    public String sendOne(@RequestParam("phoneNum") String phoneNum) {
+        Random random = new Random();
+        String randNum = "";
+        for (int i = 0; i < 5; i++) {
+            String s = Integer.toString(random.nextInt(10));
+            randNum += s;
+        }
+        cacheService.saveVerificationCode(phoneNum, randNum);
+        this.smsService.sendOne(phoneNum,randNum);
+
+
+        return randNum;
+    }
 
 
     /**
@@ -167,6 +192,48 @@ public class UserController {
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             throw new RuntimeException(exception);
+        }
+    }
+
+    /**
+     * 유저 지역 추가 API
+     * @param userRegion
+     * @param userIdx
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/{userIdx}")
+    public BaseResponse<String> postUserRegion (@RequestParam("userRegion") int userRegion, @PathVariable("userIdx") int userIdx){
+        try{
+           if(userProvider.postUserRegion(userIdx, userRegion)) {
+               String result = userIdx + " 번 유저의 지역 설정 완료";
+               return new BaseResponse<>(result);
+           }else {
+               String result = "지역 설정 실패";
+               return new BaseResponse<>(result);
+           }
+
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 유저 대표 지역 설정 API
+     * @param mainRegion
+     * @param userIdx
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/mainRegion/{userIdx}")
+    public BaseResponse<String> selectMainRegion(@RequestParam("mainRegion") String mainRegion, @PathVariable("userIdx") int userIdx) {
+        try {
+            if(userService.selectMainRegion(userIdx,mainRegion)) {
+                return new BaseResponse<>(userIdx + "메인지역 설정 완료");
+            }
+            else return new BaseResponse<>("메인 지역 설정 실패");
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
         }
     }
 

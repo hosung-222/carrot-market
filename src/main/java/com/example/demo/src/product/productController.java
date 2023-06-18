@@ -183,5 +183,20 @@ public class productController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    // 찜한 상품 등록
+    @ResponseBody
+    @PostMapping("/register")
+    public BaseResponse<String> registerLikeProduct(@RequestParam("userIdx") int userIdx, @RequestParam("productIdx") int productIdx) {
+        try {
+            if (productService.addLikeProduct(userIdx, productIdx))
+            return new BaseResponse<>(productIdx + "찜한 목록 추가");
+
+            else return new BaseResponse<>("찜한 목록 추가 실패");
+        } catch (BaseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 
